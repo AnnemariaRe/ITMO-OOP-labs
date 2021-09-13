@@ -41,12 +41,12 @@ namespace Isu.Objects
 
         public Student GetStudent(string name)
         {
-            foreach (Student student in _students.Where(i => i.GetName() == name))
-            {
-                return student;
-            }
+            return _students.FirstOrDefault(student => student.GetName() == name);
+        }
 
-            throw new IsuException("Student with this name doesn't exist");
+        public Student FindStudent(int id)
+        {
+            return _students.FirstOrDefault(student => student.GetId() == id);
         }
 
         public void RemoveStudent(Student student)

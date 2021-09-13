@@ -2,8 +2,6 @@
 {
     public class Student
     {
-        private const int CourseIndex = 2;
-
         private readonly string _name;
         private readonly int _id;
         private string _group;
@@ -35,7 +33,7 @@
         public void AddGroupToStudent(string groupName)
         {
             _group = groupName;
-            _course = _group[CourseIndex] - '0';
+            int.TryParse(groupName.Substring(2, 1), out _course);
         }
 
         public int GetCourseNumber()
