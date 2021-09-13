@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Isu.Objects;
 using Isu.Tools;
@@ -9,16 +10,13 @@ namespace Isu.Services
     {
         private const int MaxStudentsInGroup = 15;
         private const int GroupLength = 5;
-        private const int CourseIndex = 2;
 
         private readonly List<Group> _groups;
-        private readonly List<Student> _students;
         private int _idCounter;
 
         public IsuService()
         {
             _groups = new List<Group>();
-            _students = new List<Student>();
             _idCounter = 0;
         }
 
@@ -26,9 +24,9 @@ namespace Isu.Services
         {
             if (name.Length != GroupLength || !name.StartsWith("M3")) throw new IsuException("Invalid group name");
 
-            int courseNumber = name[CourseIndex] - '0';
-            if (courseNumber > 4) throw new IsuException("Invalid group name");
-            var newGroup = new Group(name, courseNumber);
+            int.TryParse(name.Substring(2, 1), out int course);
+            if (course > 4 || course == 0) throw new IsuException("Invalid group name");
+            var newGroup = new Group(name, course);
             _groups.Add(newGroup);
             return newGroup;
         }
@@ -39,16 +37,12 @@ namespace Isu.Services
 
             _idCounter++;
             @group.AddStudent(name, _idCounter);
-            _students.Add(group.GetStudent(name));
             return @group.GetStudent(name);
         }
 
         public Student GetStudent(int id)
         {
-            foreach (Student student in from @group in _groups
-                from student in @group.GetStudents()
-                where student.GetId() == id
-                select student)
+            foreach (Student student in _groups.SelectMany(@group => @group.GetStudents().Where(student => student.GetId() == id)))
             {
                 return student;
             }
@@ -58,7 +52,7 @@ namespace Isu.Services
 
         public Student FindStudent(string name)
         {
-            foreach (Student student in _students.Where(student => student.GetName() == name))
+            foreach (Student student in _groups.SelectMany(@group => @group.GetStudents().Where(student => student.GetName() == name)))
             {
                 return student;
             }
@@ -68,7 +62,7 @@ namespace Isu.Services
 
         public List<Student> FindStudents(string groupName)
         {
-            foreach (Group @group in _groups.Where(@group => @group.GetName() == groupName))
+            foreach (Group group in _groups.Where(@group => @group.GetName() == groupName))
             {
                 return group.GetStudents();
             }
@@ -78,7 +72,7 @@ namespace Isu.Services
 
         public List<Student> FindStudents(CourseNumber courseNumber)
         {
-            return _students.Where(student => student.GetCourseNumber() == courseNumber.GetNumber()).ToList();
+            return _groups.Where(@group => @group.GetCourseNumber() == courseNumber.GetNumber()).SelectMany(@group => @group.GetStudents()).ToList();
         }
 
         public Group FindGroup(string groupName)
@@ -106,9 +100,7 @@ namespace Isu.Services
                 @group.RemoveStudent(student);
             }
 
-            _students.Remove(student);
             newGroup.AddStudent(student.GetName(), student.GetId());
-            _students.Add(student);
         }
     }
 }

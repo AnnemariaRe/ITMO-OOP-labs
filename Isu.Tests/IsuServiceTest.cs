@@ -13,22 +13,23 @@ namespace Isu.Tests
         public void Setup()
         {
             //TODO: implement
-            _isuService = null;
+            _isuService = new IsuService();
         }
 
         [Test]
         public void AddStudentToGroup_StudentHasGroupAndGroupContainsStudent()
         {
             // Arrange
-            _isuService = new IsuService();
-            Group group = _isuService.AddGroup("M3206");
+            var expectedStudentName = "Annemaria Repenko";
+            var expectedGroupName = "M3206";
+            Group group = _isuService.AddGroup(expectedGroupName);
             
             // Act
-            Student student = _isuService.AddStudent(group, "Annemaria Repenko");
+            Student student = _isuService.AddStudent(group, expectedStudentName);
 
             // Assert
-            Assert.AreEqual(group.GetName(), student.GetGroupName());
-            Assert.AreEqual(student.GetName(), group.GetStudent(student.GetName()).GetName());
+            Assert.AreEqual(expectedGroupName, student.GetGroupName());
+            Assert.AreEqual(expectedStudentName, group.GetStudent(student.GetName()).GetName());
         }
 
         [Test]
@@ -36,7 +37,6 @@ namespace Isu.Tests
         {
             Assert.Catch<IsuException>(() =>
             {
-                _isuService = new IsuService();
                 Group group = _isuService.AddGroup("M3206");
                 _isuService.AddStudent(group, "Victor Odinets");
                 _isuService.AddStudent(group, "Ilya Antipin");
