@@ -24,7 +24,7 @@ namespace Isu.Services
         {
             if (name.Length != GroupLength || !name.StartsWith("M3")) throw new IsuException("Invalid group name");
 
-            int.TryParse(name.Substring(2, 1), out int course);
+            if (!int.TryParse(name.Substring(2, 1), out int course)) throw new IsuException("Invalid group name");
             if (course > 4 || course == 0) throw new IsuException("Invalid group name");
             var newGroup = new Group(name, course);
             _groups.Add(newGroup);
@@ -42,32 +42,19 @@ namespace Isu.Services
 
         public Student GetStudent(int id)
         {
-            foreach (Student student in _groups.SelectMany(@group => @group.GetStudents().Where(student => student.GetId() == id)))
-            {
-                return student;
-            }
-
-            throw new IsuException("The student with current id doesn't exist");
+            return _groups.SelectMany(@group =>
+                @group.GetStudents().Where(student => student.GetId() == id)).FirstOrDefault();
         }
 
         public Student FindStudent(string name)
         {
-            foreach (Student student in _groups.SelectMany(@group => @group.GetStudents().Where(student => student.GetName() == name)))
-            {
-                return student;
-            }
-
-            throw new IsuException("Unable to find the student with current name");
+            return _groups.SelectMany(@group => @group.GetStudents().Where(student => student.GetName() == name))
+                .FirstOrDefault();
         }
 
         public List<Student> FindStudents(string groupName)
         {
-            foreach (Group group in _groups.Where(@group => @group.GetName() == groupName))
-            {
-                return group.GetStudents();
-            }
-
-            throw new IsuException("Unable to find students in current group");
+            return _groups.FirstOrDefault(group => group.GetName() == groupName)?.GetStudents();
         }
 
         public List<Student> FindStudents(CourseNumber courseNumber)
@@ -77,12 +64,7 @@ namespace Isu.Services
 
         public Group FindGroup(string groupName)
         {
-            foreach (Group @group in _groups.Where(@group => @group.GetName() == groupName))
-            {
-                return group;
-            }
-
-            throw new IsuException("Unable to find group with current name");
+            return _groups.FirstOrDefault(@group => @group.GetName() == groupName);
         }
 
         public List<Group> FindGroups(CourseNumber courseNumber)
