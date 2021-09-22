@@ -28,8 +28,8 @@ namespace Isu.Tests
             Student student = _isuService.AddStudent(group, expectedStudentName);
 
             // Assert
-            Assert.AreEqual(expectedGroupName, student.GetGroupName());
-            Assert.AreEqual(expectedStudentName, group.GetStudent(student.GetName()).GetName());
+            Assert.AreEqual(expectedGroupName, student.Group);
+            Assert.AreEqual(expectedStudentName, group.GetStudent(student.Name).Name);
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace Isu.Tests
             {
                 _isuService = new IsuService();
                 Group group = _isuService.AddGroup("M3206");
-                Group newGroup = _isuService.AddGroup("M3111");
+                Group newGroup = _isuService.AddGroup("M3411");
                 Student student = _isuService.AddStudent(group, "Annemaria Repenko");
                 _isuService.ChangeStudentGroup(student, newGroup);
             });

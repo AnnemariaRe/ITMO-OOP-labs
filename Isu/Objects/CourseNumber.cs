@@ -2,16 +2,11 @@
 {
     public class CourseNumber
     {
-        private readonly int _number;
-
         public CourseNumber(int number)
         {
-            _number = number;
+            Number = number;
         }
 
-        public int GetNumber()
-        {
-            return _number;
-        }
+        public int Number { get; }
     }
 }

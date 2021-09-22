@@ -6,52 +6,37 @@ namespace Isu.Objects
 {
     public class Group
     {
-        private readonly string _name;
-        private readonly int _course;
-        private readonly List<Student> _students;
-
         public Group(string name, int number)
         {
-            _name = name;
-            _students = new List<Student>();
-            _course = number;
+            Name = name;
+            Students = new List<Student>();
+            Course = number;
         }
 
-        public string GetName()
-        {
-            return _name;
-        }
-
-        public List<Student> GetStudents()
-        {
-            return _students;
-        }
-
-        public int GetCourseNumber()
-        {
-            return _course;
-        }
+        public string Name { get; }
+        public int Course { get; }
+        public List<Student> Students { get; }
 
         public void AddStudent(string studentName, int id)
         {
             var newStudent = new Student(studentName, id);
-            _students.Add(newStudent);
-            newStudent.AddGroupToStudent(_name);
+            Students.Add(newStudent);
+            newStudent.AddGroupToStudent(Name);
         }
 
         public Student GetStudent(string name)
         {
-            return _students.FirstOrDefault(student => student.GetName() == name);
+            return Students.FirstOrDefault(student => student.Name == name);
         }
 
         public Student FindStudent(int id)
         {
-            return _students.FirstOrDefault(student => student.GetId() == id);
+            return Students.FirstOrDefault(student => student.Id == id);
         }
 
         public void RemoveStudent(Student student)
         {
-            _students.Remove(student);
+            Students.Remove(student);
         }
     }
 }

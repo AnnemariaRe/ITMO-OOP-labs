@@ -36,32 +36,32 @@ namespace Isu
             Console.WriteLine("Students from group M3206:");
             foreach (Student student in isu.FindStudents("M3206"))
             {
-                Console.WriteLine($"Name: {student.GetName()},  Id: {student.GetId()}");
+                Console.WriteLine($"Name: {student.Name},  Id: {student.Id}");
             }
 
             Console.WriteLine();
             Console.WriteLine("First course students:");
             foreach (Student student in isu.FindStudents(course1))
             {
-                Console.WriteLine($"Name: {student.GetName()},  Course: {student.GetCourseNumber()}");
+                Console.WriteLine($"Name: {student.Name},  Course: {student.Course}");
             }
 
             Console.WriteLine();
             Console.WriteLine("Second course groups:");
             foreach (Group group in isu.FindGroups(course2))
             {
-                Console.Write($"{group.GetName()} ");
+                Console.Write($"{group.Name} ");
             }
 
             Console.WriteLine("\n");
             Console.WriteLine("Student with id 13:");
-            Console.WriteLine($"Name: {isu.GetStudent(13).GetName()}, Id: {isu.GetStudent(13).GetId()}, " +
-                              $"Course: {isu.GetStudent(13).GetCourseNumber()}, Group: {isu.GetStudent(13).GetGroupName()} \n");
+            Console.WriteLine($"Name: {isu.GetStudent(13).Name}, Id: {isu.GetStudent(13).Id}, " +
+                              $"Course: {isu.GetStudent(13).Course}, Group: {isu.GetStudent(13).Group} \n");
 
-            Console.WriteLine($"Name: {isu.GetStudent(3).GetName()}, Group: {isu.GetStudent(3).GetGroupName()}");
+            Console.WriteLine($"Name: {isu.GetStudent(3).Name}, Group: {isu.GetStudent(3).Group}");
             Console.WriteLine("Changing group....");
             isu.ChangeStudentGroup(isu.GetStudent(3), isu.FindGroup("M3201"));
-            Console.WriteLine($"Name: {isu.GetStudent(3).GetName()}, Group: {isu.GetStudent(3).GetGroupName()}");
+            Console.WriteLine($"Name: {isu.GetStudent(3).Name}, Group: {isu.GetStudent(3).Group}");
         }
     }
 }

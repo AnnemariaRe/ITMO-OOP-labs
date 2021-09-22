@@ -1,44 +1,37 @@
-﻿namespace Isu.Objects
+﻿using Isu.Tools;
+
+namespace Isu.Objects
 {
     public class Student
     {
-        private readonly string _name;
-        private readonly int _id;
-        private string _group;
-        private int _course;
+        private const int GroupLength = 5;
+        private int course;
 
         public Student(string name, int id)
         {
-            _name = name;
-            _group = null;
-            _id = id;
-            _course = 0;
+            Name = name;
+            Group = null;
+            Id = id;
+            course = 0;
         }
 
-        public string GetName()
-        {
-            return _name;
-        }
+        public string Name { get; }
+        public int Id { get; }
+        public string Group { get; set; }
 
-        public int GetId()
+        public int Course
         {
-            return _id;
-        }
-
-        public string GetGroupName()
-        {
-            return _group;
+            get => course;
         }
 
         public void AddGroupToStudent(string groupName)
         {
-            _group = groupName;
-            int.TryParse(groupName.Substring(2, 1), out _course);
-        }
+            if (groupName.Length != GroupLength || !groupName.StartsWith("M3")) throw new IsuException("Invalid group name");
+            if (!int.TryParse(groupName.Substring(2, 1), out int course)) throw new IsuException("Invalid group name");
+            if (course > 4 || course == 0) throw new IsuException("Invalid group name");
 
-        public int GetCourseNumber()
-        {
-            return _course;
+            Group = groupName;
+            int.TryParse(groupName.Substring(2, 1), out course);
         }
     }
 }

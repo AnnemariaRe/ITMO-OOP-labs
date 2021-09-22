@@ -33,7 +33,7 @@ namespace Isu.Services
 
         public Student AddStudent(Group group, string name)
         {
-            if (@group.GetStudents().Count >= MaxStudentsInGroup) throw new IsuException("Too many students in current group");
+            if (@group.Students.Count >= MaxStudentsInGroup) throw new IsuException("Too many students in current group");
 
             _idCounter++;
             @group.AddStudent(name, _idCounter);
@@ -43,46 +43,47 @@ namespace Isu.Services
         public Student GetStudent(int id)
         {
             return _groups.SelectMany(@group =>
-                @group.GetStudents().Where(student => student.GetId() == id)).FirstOrDefault();
+                @group.Students.Where(student => student.Id == id)).FirstOrDefault();
         }
 
         public Student FindStudent(string name)
         {
-            return _groups.SelectMany(@group => @group.GetStudents().Where(student => student.GetName() == name))
+            return _groups.SelectMany(@group => @group.Students.Where(student => student.Name == name))
                 .FirstOrDefault();
         }
 
         public List<Student> FindStudents(string groupName)
         {
-            return _groups.FirstOrDefault(group => group.GetName() == groupName)?.GetStudents();
+            return _groups.FirstOrDefault(group => group.Name == groupName)?.Students;
         }
 
         public List<Student> FindStudents(CourseNumber courseNumber)
         {
-            return _groups.Where(@group => @group.GetCourseNumber() == courseNumber.GetNumber()).SelectMany(@group => @group.GetStudents()).ToList();
+            return _groups.Where(@group => @group.Course == courseNumber.Number).SelectMany(@group => @group.Students).ToList();
         }
 
         public Group FindGroup(string groupName)
         {
-            return _groups.FirstOrDefault(@group => @group.GetName() == groupName);
+            return _groups.FirstOrDefault(@group => @group.Name == groupName);
         }
 
         public List<Group> FindGroups(CourseNumber courseNumber)
         {
-            return _groups.Where(@group => @group.GetCourseNumber() == courseNumber.GetNumber()).ToList();
+            return _groups.Where(@group => @group.Course == courseNumber.Number).ToList();
         }
 
         public void ChangeStudentGroup(Student student, Group newGroup)
         {
-            if (newGroup.GetName() == student.GetGroupName()) throw new IsuException("Student is already in the current group");
-            if (student.GetCourseNumber() != newGroup.GetCourseNumber()) throw new IsuException("Student cannot be transferred to the different course");
+            if (student == null || newGroup == null) throw new IsuException("Student or group doesn't exist");
+            if (newGroup.Name == student.Group) throw new IsuException("Student is already in the current group");
+            if (student.Course != newGroup.Course && (student.Course + 1) != newGroup.Course) throw new IsuException("Student cannot be transferred to required course");
 
-            foreach (Group @group in _groups.Where(@group => @group.GetName() == student.GetGroupName()))
+            foreach (Group @group in _groups.Where(@group => @group.Name == student.Group))
             {
                 @group.RemoveStudent(student);
             }
 
-            newGroup.AddStudent(student.GetName(), student.GetId());
+            newGroup.AddStudent(student.Name, student.Id);
         }
     }
 }
