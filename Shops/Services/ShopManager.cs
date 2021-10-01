@@ -11,20 +11,28 @@ namespace Shops.Services
         private List<Shop> _shops = new ();
         private List<Product> _products = new ();
 
-        public Shop CreateShop(string name, string adress)
+        public Shop CreateShop(string name, string address)
         {
-            if (name == null || adress == null) throw new NullException();
-            var shop = new Shop(name, adress);
-            _shops.Add(shop);
-            return shop;
+            if (name == null || address == null) throw new NullException();
+            if (_shops.Any(shop => shop.Name == name && shop.Address == address))
+            {
+                throw new ShopException("Current shop already exists");
+            }
+
+            var newShop = new Shop(name, address);
+            _shops.Add(newShop);
+            return newShop;
         }
 
         public Product RegisterProduct(string name)
         {
             if (name == null) throw new NullException();
-            var product = new Product(name);
-            _products.Add(product);
-            return product;
+            var product = _products.FirstOrDefault(product => product.Name == name);
+            if (product != null) return product;
+
+            var newProduct = new Product(name);
+            _products.Add(newProduct);
+            return newProduct;
         }
 
         public void AddProduct(Shop shop, Product product, decimal price, int quantity)
@@ -60,13 +68,11 @@ namespace Shops.Services
             decimal minPrice = 0;
             Shop cheapestShop = null;
 
-            foreach (var shop in _shops.Where(shop => shop.ContainsProduct(product.Id))
-                .Where(shop => (minPrice == 0 || shop.GetProduct(product.Id).Price < minPrice) &&
-                               shop.GetProduct(product.Id).Quantity >= quantity))
-            {
-                minPrice = shop.GetProduct(product.Id).Price;
-                cheapestShop = shop;
-            }
+            minPrice = _shops.Where(shop => shop.ContainsProduct(product.Id))
+                .Where(shop => shop.GetProduct(product.Id).Quantity >= quantity)
+                .Min(shop => shop.GetProduct(product.Id).Price);
+
+            cheapestShop = _shops.FirstOrDefault(shop => shop.GetProduct(product.Id).Price == minPrice);
 
             if (cheapestShop == null || minPrice == 0)
                 throw new ShopException("Cannot find the cheapest shop: product doesn't exist or not enough product");
@@ -105,7 +111,7 @@ namespace Shops.Services
             Console.WriteLine("===SHOPS LIST===");
             foreach (var shop in _shops)
             {
-                Console.WriteLine($"Name: {shop.Name},  Adress: {shop.Adress},  Id: {shop.Id}");
+                Console.WriteLine($"Name: {shop.Name},  Adress: {shop.Address},  Id: {shop.Id}");
             }
         }
     }
