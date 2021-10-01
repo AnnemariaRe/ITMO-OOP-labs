@@ -9,19 +9,19 @@ namespace Shops.Objects
     {
         private string _id;
         private string _name;
-        private string _adress;
+        private string _address;
 
-        public Shop(string name, string adress)
+        public Shop(string name, string address)
         {
             _name = name;
-            _adress = adress;
+            _address = address;
             ProductList = new Dictionary<string, StoredProduct>();
             _id = Guid.NewGuid().ToString();
         }
 
         public string Id { get => _id; }
         public string Name { get => _name; }
-        public string Adress { get => _adress; }
+        public string Address { get => _address; }
         private Dictionary<string, StoredProduct> ProductList { get; }
 
         public void AddProduct(Product product, decimal price, int quantity)
@@ -66,7 +66,7 @@ namespace Shops.Objects
 
         public void ProductPrinter()
         {
-            Console.WriteLine($"All products from {Name} ({Adress}):");
+            Console.WriteLine($"All products from {Name} ({Address}):");
 
             foreach (var product in ProductList)
             {
