@@ -65,17 +65,16 @@ namespace Shops.Services
         public Shop FindCheapestShop(Product product, int quantity)
         {
             if (quantity <= 0) throw new NullException();
-            decimal minPrice = 0;
-            Shop cheapestShop = null;
 
-            minPrice = _shops.Where(shop => shop.ContainsProduct(product.Id))
+            Shop cheapestShop = _shops.Where(shop => shop.ContainsProduct(product.Id))
                 .Where(shop => shop.GetProduct(product.Id).Quantity >= quantity)
-                .Min(shop => shop.GetProduct(product.Id).Price);
+                .OrderBy(shop => shop.GetProduct(product.Id).Price).FirstOrDefault();
 
-            cheapestShop = _shops.FirstOrDefault(shop => shop.GetProduct(product.Id).Price == minPrice);
-
-            if (cheapestShop == null || minPrice == 0)
-                throw new ShopException("Cannot find the cheapest shop: product doesn't exist or not enough product");
+            if (cheapestShop == null)
+            {
+                throw new ShopException(
+                        "Cannot find the cheapest shop: product doesn't exist or not enough product");
+            }
 
             return cheapestShop;
         }
