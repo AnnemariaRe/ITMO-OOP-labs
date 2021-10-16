@@ -2,9 +2,9 @@ using System;
 
 namespace IsuExtra.Tools
 {
-    public class NullInputException : Exception
+    public class NullInputException : IsuExtraException
     {
-        public NullInputException(string message = "Invalid input name")
+        public NullInputException(string message)
             : base(message)
         {
         }

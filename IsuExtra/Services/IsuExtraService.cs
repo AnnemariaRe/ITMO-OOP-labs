@@ -13,6 +13,8 @@ namespace IsuExtra.Services
         private const int MaxStudentsInGroup = 15;
         private const int GroupLength = 5;
         private const int MaxStudentsInOgnp = 20;
+        private const int MaxOgnpGroups = 5;
+        private const int MinOgnpGroups = 1;
 
         private readonly List<Group> _groups;
         private readonly List<Ognp> _ognp;
@@ -48,8 +50,10 @@ namespace IsuExtra.Services
 
         public Student GetStudent(int id)
         {
-            return _groups.SelectMany(group =>
+            var student = _groups.SelectMany(group =>
                 group.Students.Where(student => student.Id == id)).FirstOrDefault();
+            if (student == null) throw new IsuExtraException("Student is not exist");
+            return student;
         }
 
         public Student FindStudent(string name)
@@ -80,7 +84,8 @@ namespace IsuExtra.Services
 
         public void ChangeStudentGroup(Student student, Group newGroup)
         {
-            if (student == null || newGroup == null) throw new NullInputException();
+            if (student == null) throw new NullInputException("Invalid student object");
+            if (newGroup == null) throw new NullInputException("Invalid group object");
             if (newGroup.Name == student.Group) throw new IsuExtraException("Student is already in the current group");
             if (student.Course != newGroup.Course && (student.Course + 1) != newGroup.Course) throw new IsuExtraException("Student cannot be transferred to required course");
 
@@ -95,20 +100,25 @@ namespace IsuExtra.Services
         // IsuExtra
         public Class AddClassToGroup(string subject, string group, int startHour, int startMinute, int endHour, int endMinute, int weekDay, int audience)
         {
-            if (subject == null || group == null || audience == 0) throw new NullInputException();
+            if (string.IsNullOrEmpty(subject)) throw new NullInputException("Invalid subject name");
+            if (string.IsNullOrEmpty(group)) throw new NullInputException("Invalid group name");
+            if (audience is 0) throw new NullInputException("Invalid audience number");
             return _groups.FirstOrDefault(gr => gr.Name == group)?.AddClass(subject, startHour, startMinute, endHour, endMinute, weekDay, audience);
         }
 
         public Class AddClassToOgnpGroup(string group, int startHour, int startMinute, int endHour, int endMinute, int weekDay, int audience)
         {
-            if (group == null || audience == 0) throw new NullInputException();
+            if (string.IsNullOrEmpty(group)) throw new NullInputException("Invalid group name");
+            if (audience is 0) throw new NullInputException("Invalid audience number");
             return _ognp.FirstOrDefault(o => o.Groups.Any(g => group.StartsWith(g.Name)))
                 ?.AddClassToGroup(group, startHour, startMinute, endHour, endMinute, weekDay, audience);
         }
 
         public Ognp AddOgnp(string name, string faculty, int numberOfGroups)
         {
-            if (name == null || faculty == null || numberOfGroups is < 1 or > 5) throw new NullInputException();
+            if (string.IsNullOrEmpty(name)) throw new NullInputException("Invalid ognp name");
+            if (string.IsNullOrEmpty(faculty)) throw new NullInputException("Invalid faculty name");
+            if (numberOfGroups is < MinOgnpGroups or > MaxOgnpGroups) throw new NullInputException("Invalid number of groups");
             if (!int.TryParse(faculty.Substring(1, 1), out int number) || faculty.Length != 2) throw new IsuExtraException("Invalid faculty name");
             if (!char.TryParse(faculty.Substring(0, 1), out char letter)) throw new IsuExtraException("Invalid faculty name");
 
@@ -121,29 +131,21 @@ namespace IsuExtra.Services
 
         public void AddStudentToOgnp(Student student, Ognp ognp)
         {
-            if (student == null || ognp == null) throw new NullInputException();
+            if (student == null) throw new NullInputException("Invalid student object");
+            if (ognp == null) throw new NullInputException("Invalid ognp object");
             if (student.Group.StartsWith(ognp.FacultyName))
                 throw new IsuExtraException("Student cannot be added to the ognp of his faculty");
             if (!_ognp.Contains(ognp)) throw new IsuExtraException("Current ognp doesn't exist");
             if (student.OgnpName1 != null && student.OgnpName2 != null)
                 throw new IsuExtraException("Student already has ognp");
 
-            bool check;
-            foreach (var ognpGroup in ognp.Groups)
+            foreach (var ognpGroup in ognp.Groups.Where(ognpGroup =>
+                ognpGroup.Students.Count < MaxStudentsInOgnp && !ognpGroup.Classes.Any(ognpClass =>
+                    _groups.First(group => @group.Name == student.Group).Classes
+                        .Any(groupClass => ognpClass.Schedule.Equals(groupClass.Schedule)))))
             {
-                check = true;
-                if (ognpGroup.Students.Count > MaxStudentsInOgnp ||
-                    ognpGroup.Classes.Any(ognpClass => _groups.First(group => group.Name == student.Group)
-                        .Classes.Any(groupClass => ognpClass.Schedule.Equals(groupClass.Schedule))))
-                {
-                    check = false;
-                }
-
-                if (check)
-                {
-                    ognpGroup.AddStudent(student);
-                    break;
-                }
+                ognpGroup.AddStudent(student);
+                break;
             }
 
             if (!ognp.Groups.Any(group => group.Students.Contains(student)))
@@ -152,7 +154,8 @@ namespace IsuExtra.Services
 
         public void CancelRegistration(Student student, Ognp ognp)
         {
-            if (student == null || ognp == null) throw new NullInputException();
+            if (student == null) throw new NullInputException("Invalid student object");
+            if (ognp == null) throw new NullInputException("Invalid ognp object");
             if (_ognp.Contains(ognp) && ognp.Groups.Any(group => group.Students.Contains(student)))
             {
                 ognp.Groups.FirstOrDefault(group => group.Students.Contains(student))?.Students.Remove(student);
@@ -163,22 +166,28 @@ namespace IsuExtra.Services
 
         public List<Student> GetStudentsFromOgnp(string ognpName)
         {
-            if (ognpName == null) throw new NullInputException();
-            return _ognp.FirstOrDefault(ognp => ognpName.StartsWith(ognp.Name))?.Groups
+            if (string.IsNullOrEmpty(ognpName)) throw new NullInputException("Invalid input ognp name");
+            var students = _ognp.FirstOrDefault(ognp => ognpName.StartsWith(ognp.Name))?.Groups
                 .FirstOrDefault(group => group.Name == ognpName)?.Students;
+            if (students == null) throw new IsuExtraException("There is no students in the current ognp group");
+            return students;
         }
 
         public List<Student> GetStudentsWithoutOgnp(string groupName)
         {
-            if (groupName == null) throw new NullInputException();
-            return _groups.FirstOrDefault(group => group.Name == groupName)
+            if (string.IsNullOrEmpty(groupName)) throw new NullInputException("Invalid input group name");
+            var students = _groups.FirstOrDefault(group => group.Name == groupName)
                 ?.Students.Where(student => student.OgnpName1 == null && student.OgnpName2 == null).ToList();
+            if (students == null) throw new IsuExtraException("There are no students without ognp");
+            return students;
         }
 
         public List<Group> GetOgnpGroups(string ognpName)
         {
-            if (ognpName == null) throw new NullInputException();
-            return _ognp.FirstOrDefault(o => o.Name == ognpName)?.Groups;
+            if (string.IsNullOrEmpty(ognpName)) throw new NullInputException("Invalid input ognp name");
+            var groups = _ognp.FirstOrDefault(o => o.Name == ognpName)?.Groups;
+            if (groups == null) throw new IsuExtraException("There are no groups with current ognp name");
+            return groups;
         }
     }
 }

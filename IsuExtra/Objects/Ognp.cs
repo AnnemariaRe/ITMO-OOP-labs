@@ -7,17 +7,22 @@ namespace IsuExtra.Objects
 {
     public class Ognp
     {
+        private readonly string _name;
+        private readonly string _facultyName;
+        private readonly List<Group> _groups;
+
         public Ognp(string name, string facultyName)
         {
-            if (name == null || facultyName == null) throw new NullInputException();
-            Name = name;
-            FacultyName = facultyName;
-            Groups = new List<Group>();
+            if (string.IsNullOrEmpty(name)) throw new NullInputException("Invalid ognp name");
+            if (string.IsNullOrEmpty(facultyName)) throw new NullInputException("Invalid faculty name");
+            _facultyName = facultyName;
+            _groups = new List<Group>();
+            _name = name;
         }
 
-        public string Name { get; }
-        public string FacultyName { get; }
-        public List<Group> Groups { get; }
+        public string Name => _name;
+        public string FacultyName => _facultyName;
+        public List<Group> Groups => _groups;
 
         public void AddGroup(string name)
         {
