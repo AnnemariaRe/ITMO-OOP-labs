@@ -15,8 +15,8 @@ namespace Backups.Tests
         public void Setup()
         {
             service = new BackupService();
-            File.Create(service.Repository.FullPath + @"\" + "bebra.txt").Close();
-            File.Create(service.Repository.FullPath + @"\" + "aboba.txt").Close();
+            File.Create(service.Repository.FullPath + Path.PathSeparator + "bebra.txt").Close();
+            File.Create(service.Repository.FullPath + Path.PathSeparator + "aboba.txt").Close();
         }
 
         [Test]
@@ -24,8 +24,8 @@ namespace Backups.Tests
         {
             // Arrange
             var backupJob = service.CreateBackupJob("SplitStorages");
-            var jobObject1 = service.AddJobObject(backupJob.Id, new JobObject(service.Repository.FullPath + @"\" + "bebra.txt"));
-            var jobObject2 = service.AddJobObject(backupJob.Id, new JobObject(service.Repository.FullPath + @"\" + "aboba.txt"));
+            var jobObject1 = service.AddJobObject(backupJob.Id, new JobObject(service.Repository.FullPath + Path.PathSeparator + "bebra.txt"));
+            var jobObject2 = service.AddJobObject(backupJob.Id, new JobObject(service.Repository.FullPath + Path.PathSeparator + "aboba.txt"));
 
             // Act
             service.CreateRestorePoint(backupJob.Id);

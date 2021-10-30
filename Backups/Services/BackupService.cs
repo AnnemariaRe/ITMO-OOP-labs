@@ -86,14 +86,14 @@ namespace Backups.Services
 
             foreach (var joba in BackupJobs)
             {
-                Directory.CreateDirectory(Repository.FullPath + @"\" + joba.JobName);
+                Directory.CreateDirectory(Repository.FullPath + Path.PathSeparator + joba.JobName);
                 foreach (var point in joba.RestorePoints)
                 {
-                    Directory.CreateDirectory(Repository.FullPath + @"\" + joba.JobName + @"\" + point.PointName);
+                    Directory.CreateDirectory(Repository.FullPath + Path.PathSeparator + joba.JobName + Path.PathSeparator + point.PointName);
                     foreach (var storage in point.Storages)
                     {
                         storage.Zip.Save(storage.StorageName);
-                        File.Create(Repository.FullPath + @"\" + joba.JobName + @"\" + point.PointName + @"\" + storage.Zip.Name).Close();
+                        File.Create(Repository.FullPath + Path.PathSeparator + joba.JobName + Path.PathSeparator + point.PointName + Path.PathSeparator + storage.Zip.Name).Close();
                     }
                 }
             }
