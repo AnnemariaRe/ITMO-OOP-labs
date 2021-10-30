@@ -6,18 +6,19 @@ namespace Backups.Models
 {
     public class RestorePoint
     {
-        public RestorePoint(List<Storage> storages, int number, string pointName)
+        private List<Storage> _storages;
+        public RestorePoint(List<Storage> storages, int number, string pointName, DateTime creationTime)
         {
             if (number is 0) throw new NullOrEmptyBackupException("Number cannot be null");
             Number = number;
             PointName = pointName + $"_{number}";
-            CreationTime = DateTime.Now;
-            Storages = storages ?? throw new NullOrEmptyBackupException("Storages cannot be null");
+            CreationTime = creationTime;
+            _storages = storages ?? throw new NullOrEmptyBackupException("Storages cannot be null");
         }
 
         public string PointName { get; }
         public DateTime CreationTime { get; }
-        public List<Storage> Storages { get; }
+        public List<Storage> Storages => _storages;
         public int Number { get; }
     }
 }

@@ -10,9 +10,6 @@ namespace Backups.Services
 {
     public class BackupService : IBackupService
     {
-        private const string SingleStorage = "SingleStorage";
-        private const string SplitStorages = "SplitStorages";
-
         private readonly IAlgorithm _singleStorageAlgorithm = new SingleStorageAlgorithm();
         private readonly IAlgorithm _splitStoragesAlgorithm = new SplitStoragesAlgorithm();
         private int _jobCounter;
@@ -20,7 +17,7 @@ namespace Backups.Services
 
         public BackupService()
         {
-            Repository = new Repository(@"C:\Users\PC\source\repos\AnnemariaRe\Backups\Repository");
+            Repository = new Repository(Directory.GetCurrentDirectory());
             BackupJobs = new List<BackupJob>();
             _pointCounter = 1;
             _jobCounter = 1;
@@ -46,13 +43,13 @@ namespace Backups.Services
             var storages = new List<Storage>();
             switch (backupJob.StorageType)
             {
-                case SingleStorage:
+                case EnumStorageType.SingleStorage:
                 {
                     storages.AddRange(_singleStorageAlgorithm.SaveCopies(_pointCounter, backupJob.FilesToBackup));
                     break;
                 }
 
-                case SplitStorages:
+                case EnumStorageType.SplitStorages:
                 {
                     storages.AddRange(_splitStoragesAlgorithm.SaveCopies(_pointCounter, backupJob.FilesToBackup));
                     break;
@@ -61,7 +58,7 @@ namespace Backups.Services
                 default: throw new BackupException("Invalid storage type name");
             }
 
-            var newRestorePoint = new RestorePoint(storages, _pointCounter, "RestorePoint");
+            var newRestorePoint = new RestorePoint(storages, _pointCounter, "RestorePoint", DateTime.Now);
             _pointCounter++;
             Repository.Storages.AddRange(storages);
             backupJob.RestorePoints.Add(newRestorePoint);
@@ -84,8 +81,8 @@ namespace Backups.Services
         public void SaveBackup()
         {
             var directory = new DirectoryInfo(Repository.FullPath);
-            if (directory.Exists) Console.WriteLine("Directory is already exist");
-            else Directory.CreateDirectory(directory.FullName);
+            if (directory.Exists) throw new NullOrEmptyBackupException("Directory is already exist");
+            Directory.CreateDirectory(directory.FullName);
 
             foreach (var joba in BackupJobs)
             {
@@ -96,7 +93,7 @@ namespace Backups.Services
                     foreach (var storage in point.Storages)
                     {
                         storage.Zip.Save(storage.StorageName);
-                        File.Create(Repository.FullPath + @"\" + joba.JobName + @"\" + point.PointName + @"\" + storage.Zip.Name);
+                        File.Create(Repository.FullPath + @"\" + joba.JobName + @"\" + point.PointName + @"\" + storage.Zip.Name).Close();
                     }
                 }
             }

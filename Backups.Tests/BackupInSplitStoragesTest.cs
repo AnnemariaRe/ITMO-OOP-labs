@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using Backups.Models;
 using Backups.Services;
@@ -14,6 +15,8 @@ namespace Backups.Tests
         public void Setup()
         {
             service = new BackupService();
+            File.Create(service.Repository.FullPath + @"\" + "bebra.txt").Close();
+            File.Create(service.Repository.FullPath + @"\" + "aboba.txt").Close();
         }
 
         [Test]
@@ -21,8 +24,8 @@ namespace Backups.Tests
         {
             // Arrange
             var backupJob = service.CreateBackupJob("SplitStorages");
-            var jobObject1 = service.AddJobObject(backupJob.Id, new JobObject(@"C:\Users\PC\source\repos\AnnemariaRe\Backups\FilesToBackup\aboba.txt"));
-            var jobObject2 = service.AddJobObject(backupJob.Id, new JobObject(@"C:\Users\PC\source\repos\AnnemariaRe\Backups\FilesToBackup\bebra.txt"));
+            var jobObject1 = service.AddJobObject(backupJob.Id, new JobObject(service.Repository.FullPath + @"\" + "bebra.txt"));
+            var jobObject2 = service.AddJobObject(backupJob.Id, new JobObject(service.Repository.FullPath + @"\" + "aboba.txt"));
 
             // Act
             service.CreateRestorePoint(backupJob.Id);
