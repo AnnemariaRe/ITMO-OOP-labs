@@ -17,7 +17,7 @@ namespace Backups.Models
             {
                 var zip = new ZipFile();
                 zip.AddFile(jobObject.File.FullName);
-                storages.Add(new Storage(jobObject.File.Name.Substring(0, jobObject.File.Name.LastIndexOf(".")) + $"_{number}.zip", zip));
+                storages.Add(new Storage(Path.GetFileNameWithout(jobObject.File.Name) + $"_{number}.zip", zip));
             }
 
             return storages;
