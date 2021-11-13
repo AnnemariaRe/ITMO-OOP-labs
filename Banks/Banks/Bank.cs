@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Transactions;
 using Banks.Accounts;
 using Banks.Clients;
@@ -14,7 +15,7 @@ namespace Banks.Banks
     {
         private readonly AccountFactory _accountFactory;
 
-        public Bank(string name, decimal debitInterest, List<(int, decimal)> depositInterests, decimal creditComission, int creditLimit)
+        public Bank(string name, decimal debitInterest, Dictionary<int, decimal> depositInterests, decimal creditComission, int creditLimit)
         {
             Id = Guid.NewGuid();
             if (string.IsNullOrEmpty(name)) throw new NullOrEmptyBanksException("Name cannot be null");
@@ -30,14 +31,12 @@ namespace Banks.Banks
         public List<Account> Accounts { get; }
         public Dictionary<Client, List<Account>> Clients { get; }
 
-        public Client AddNewClient(string name, string surname, string address = null, int passportId = 0)
+        public Client AddNewClient(Client client)
         {
-            if (string.IsNullOrEmpty(name)) throw new NullOrEmptyBanksException("Name cannot be null");
-            if (string.IsNullOrEmpty(surname)) throw new NullOrEmptyBanksException("Surname cannot be null");
-            var newClient = new ClientBuilder().SetName(name).SetSurname(surname).SetAdress(address)
-                .SetPassportId(passportId).GetInfo();
-            Clients.Add(newClient, new List<Account>());
-            return newClient;
+            if (client == null) throw new NullOrEmptyBanksException("Client cannot be null");
+            if (Clients.ContainsKey(client)) throw new BanksException("Bank already has current client");
+            Clients.Add(client, new List<Account>());
+            return client;
         }
 
         public void RemoveClient(Client client)
@@ -110,7 +109,7 @@ namespace Banks.Banks
             _accountFactory.SetDebitInterest(interest);
         }
 
-        public void UpdateDepositInterests(List<(int, decimal)> interests)
+        public void UpdateDepositInterests(Dictionary<int, decimal> interests)
         {
             _accountFactory.SetDepositInterests(interests);
         }
@@ -125,22 +124,25 @@ namespace Banks.Banks
             _accountFactory.SetCreditComission(comission);
         }
 
-        public void PrintInfo()
+        public override string ToString()
         {
-            Console.WriteLine($"BANK - {Name}");
-            Console.WriteLine("List of clients: ");
+            var sb = new StringBuilder();
+            sb.AppendLine($"BANK - {Name}");
+            sb.AppendLine("List of clients: ");
+
             foreach (var client in Clients)
             {
-                client.Key.PrintInfo();
-                Console.WriteLine("Client accounts: ");
+                sb.AppendLine(client.Key.ToString());
+                sb.AppendLine("Client accounts: ");
                 foreach (var account in client.Value)
                 {
-                    account.PrintInfo();
-                    Console.WriteLine("-------------------");
+                    sb.AppendLine(account.ToString());
+                    sb.AppendLine("-------------------");
                 }
             }
 
-            Console.WriteLine("---------------------------------");
+            sb.AppendLine("---------------------------------");
+            return sb.ToString();
         }
     }
 }

@@ -11,9 +11,9 @@ namespace Banks.Accounts
         public int Limit { get; private set; }
         public decimal Comission { get; private set; }
         public DateTime ExpirationDate { get; private set; }
-        public List<(int, decimal)> Interests { get; private set; }
+        public Dictionary<int, decimal> Interests { get; private set; }
 
-        public AccountFactory SetValues(int limit, decimal comission, decimal interestOnBalance, List<(int, decimal)> interests)
+        public AccountFactory SetValues(int limit, decimal comission, decimal interestOnBalance, Dictionary<int, decimal> interests)
         {
             if (limit <= 0) throw new NullOrEmptyBanksException("Limit cannot be null or negative");
             Limit = limit;
@@ -54,7 +54,7 @@ namespace Banks.Accounts
             InterestOnBalance = interest;
         }
 
-        public void SetDepositInterests(List<(int, decimal)> interests)
+        public void SetDepositInterests(Dictionary<int, decimal> interests)
         {
             Interests = interests ?? throw new NullOrEmptyBanksException("Interests cannot be null");
         }

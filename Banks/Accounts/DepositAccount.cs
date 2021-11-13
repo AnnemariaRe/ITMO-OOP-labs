@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Banks.Clients;
 using Banks.Tools;
@@ -8,7 +9,7 @@ namespace Banks.Accounts
 {
     public class DepositAccount : Account
     {
-        public DepositAccount(decimal balance, Client owner, DateTime expirationDate, List<(int, decimal)> interests)
+        public DepositAccount(decimal balance, Client owner, DateTime expirationDate, Dictionary<int, decimal> interests)
             : base(balance, owner)
         {
             if (interests == null) throw new NullOrEmptyBanksException("List of interests cannot be null");
@@ -29,15 +30,12 @@ namespace Banks.Accounts
             return sb.ToString();
         }
 
-        private void SetInterestOnBalance(List<(int, decimal)> interests)
+        private void SetInterestOnBalance(Dictionary<int, decimal> interests)
         {
-            for (int i = 0; i < interests.Capacity; i++)
+            foreach (var interest in interests.Where(interest => Balance < interest.Key))
             {
-                if (Balance < interests[i].Item1)
-                {
-                    InterestOnBalance = interests[i].Item2;
-                    break;
-                }
+                InterestOnBalance = interest.Value;
+                break;
             }
 
             if (Balance == 0) InterestOnBalance = 0;

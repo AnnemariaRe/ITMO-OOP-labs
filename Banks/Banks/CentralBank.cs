@@ -17,7 +17,7 @@ namespace Banks.Banks
 
         public List<Bank> Banks { get; internal set; }
 
-        public Bank CreateBank(string name, decimal debitInterest, List<(int, decimal)> depositInterests, decimal creditComission, int creditLimit)
+        public Bank CreateBank(string name, decimal debitInterest, Dictionary<int, decimal> depositInterests, decimal creditComission, int creditLimit)
         {
             var newBank = new Bank(name, debitInterest, depositInterests, creditComission, creditLimit);
             Banks.Add(newBank);
@@ -26,7 +26,9 @@ namespace Banks.Banks
 
         public Client AddClientToBank(Client client, Guid bankId)
         {
-            return Banks.FirstOrDefault(bank => bank.Id == bankId)?.AddNewClient(client);
+            var bank = Banks.FirstOrDefault(bank => bank.Id == bankId);
+            if (bank == null) throw new NullOrEmptyBanksException("Cannot find current bank");
+            return bank.AddNewClient(client);
         }
 
         public Account CreateAccount(Client client, Guid bankId, string accountType, decimal money)

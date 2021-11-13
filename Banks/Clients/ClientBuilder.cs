@@ -1,30 +1,31 @@
 using System.Runtime.CompilerServices;
+using Banks.Tools;
 
 namespace Banks.Clients
 {
-    public class ClientBuilder : IBuilder
+    public class ClientBuilder : IClientBuilder
     {
-        private Client _client = new Client();
+        private Client _client;
 
-        public IBuilder SetName(string name)
+        public IClientBuilder SetName(string name)
         {
             _client.Name = name;
             return this;
         }
 
-        public IBuilder SetSurname(string surname)
+        public IClientBuilder SetSurname(string surname)
         {
             _client.Surname = surname;
             return this;
         }
 
-        public IBuilder SetAdress(string adress = null)
+        public IClientBuilder SetAddress(string address = null)
         {
-            _client.Address = adress;
+            _client.Address = address;
             return this;
         }
 
-        public IBuilder SetPassportId(int passportId = 0)
+        public IClientBuilder SetPassportId(int passportId = 0)
         {
             _client.PassportId = passportId;
             return this;
@@ -35,10 +36,11 @@ namespace Banks.Clients
             _client = new Client();
         }
 
-        public Client GetInfo()
+        public Client Build()
         {
+            if (_client.Name == null || _client.Surname == null)
+                throw new NullOrEmptyBanksException("Cannot create client without name or surname");
             var currentClient = _client;
-            currentClient.SetVerification();
             Reset();
             return currentClient;
         }

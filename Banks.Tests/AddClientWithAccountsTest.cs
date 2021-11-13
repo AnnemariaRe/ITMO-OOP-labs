@@ -10,18 +10,17 @@ namespace Banks.Tests
     {
         private CentralBank _service;
         private Bank _bank;
-        private List<(int, decimal)> _interests;
+        private Dictionary<int, decimal> _interests;
         
         [SetUp]
         public void Setup()
         {
             _service = new CentralBank();
-            _interests = new List<(int, decimal)>
-            {
-                (5000, 3),
-                (50000, 4),
-                (10000, 5)
-            };
+            _interests = new Dictionary<int, decimal>();
+            _interests.Add(5000, 3);
+            _interests.Add(50000, 4);
+            _interests.Add(10000, 5);
+
             _bank = _service.CreateBank("AlfaBank", 3, _interests, 20, 30000);
         }
 
@@ -29,7 +28,7 @@ namespace Banks.Tests
         public void AddClientWithDebitAccountTest()
         {
             // Act
-            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").GetInfo(), _bank.Id);
+            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").Build(), _bank.Id);
             var account = _service.CreateAccount(client, _bank.Id, "Debit", 12937);
 
             // Assert
@@ -42,7 +41,7 @@ namespace Banks.Tests
         public void AddClientWithDepositAccountTest()
         {
             // Act
-            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").GetInfo(), _bank.Id);
+            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").Build(), _bank.Id);
             var account = _service.CreateAccount(client, _bank.Id, "Deposit", 7345);
 
             // Assert
@@ -54,7 +53,7 @@ namespace Banks.Tests
         public void AddClientWithCreditAccountTest()
         {
             // Act
-            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").GetInfo(), _bank.Id);
+            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").Build(), _bank.Id);
             var account = _service.CreateAccount(client, _bank.Id, "Credit", 1);
 
             // Assert

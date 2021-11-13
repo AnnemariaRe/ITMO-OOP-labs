@@ -10,18 +10,17 @@ namespace Banks.Tests
     {
         private CentralBank _service;
         private Bank _bank;
-        private List<(int, decimal)> _interests;
+        private Dictionary<int, decimal> _interests;
         
         [SetUp]
         public void Setup()
         {
             _service = new CentralBank();
-            _interests = new List<(int, decimal)>
-            {
-                (5000, 3),
-                (50000, 4),
-                (10000, 5)
-            };
+            _interests = new Dictionary<int, decimal>();
+            _interests.Add(5000, 3);
+            _interests.Add(50000, 4);
+            _interests.Add(10000, 5);
+            
             _bank = _service.CreateBank("AlfaBank", 3, _interests, 20, 3000);
         }
 
@@ -29,7 +28,7 @@ namespace Banks.Tests
         public void ReplenishTest()
         {
             // Assert
-            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").GetInfo(), _bank.Id);
+            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").Build(), _bank.Id);
             var account = _service.CreateAccount(client, _bank.Id, "Credit", 5000);
             
             // Act
@@ -43,7 +42,7 @@ namespace Banks.Tests
         public void WithdrawExceptionTest()
         {
             // Assert
-            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").GetInfo(), _bank.Id);
+            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").Build(), _bank.Id);
             var account = _service.CreateAccount(client, _bank.Id, "Credit", 5);
 
             // Assert
@@ -57,9 +56,9 @@ namespace Banks.Tests
         public void TransferTest()
         {
             // Assert
-            var client1 = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").GetInfo(), _bank.Id);
+            var client1 = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").Build(), _bank.Id);
             var account1 = _service.CreateAccount(client1, _bank.Id, "Credit", 200);
-            var client2 = _service.AddClientToBank(new ClientBuilder().SetName("Ksenia").SetSurname("Vasutinkskaya").GetInfo(), _bank.Id);
+            var client2 = _service.AddClientToBank(new ClientBuilder().SetName("Ksenia").SetSurname("Vasutinkskaya").Build(), _bank.Id);
             var account2 = _service.CreateAccount(client2, _bank.Id, "Credit", 10);
             
             // Act
@@ -74,7 +73,7 @@ namespace Banks.Tests
         public void UndoTest()
         {
             // Assert
-            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").GetInfo(), _bank.Id);
+            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").Build(), _bank.Id);
             var account = _service.CreateAccount(client, _bank.Id, "Debit", 5000);
             
             // Act

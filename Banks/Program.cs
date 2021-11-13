@@ -12,6 +12,7 @@ namespace Banks
         private static void Main()
         {
             var service = new CentralBank();
+            service.Banks = new List<Bank>();
             string line = null;
             string name = null;
             string surname = null;
@@ -21,7 +22,7 @@ namespace Banks
             int passport = 0;
             decimal money = 0;
             decimal debitInterest = 0;
-            var interests = new List<(int, decimal)>();
+            var interests = new Dictionary<int, decimal>();
             int amount = 0;
             decimal interest = 0;
             decimal comission = 0;
@@ -52,7 +53,7 @@ namespace Banks
                         Console.WriteLine("Please enter debit interest:");
                         debitInterest = Convert.ToDecimal(Console.ReadLine());
                         Console.WriteLine("Please enter deposit interests:");
-                        interests = new List<(int, decimal)>();
+                        interests = new Dictionary<int, decimal>();
 
                         for (int i = 0; i < 3; i++)
                         {
@@ -60,7 +61,7 @@ namespace Banks
                             amount = Convert.ToInt32(Console.ReadLine());
                             Console.WriteLine("Enter interest for this amount");
                             interest = Convert.ToDecimal(Console.ReadLine());
-                            interests.Add((amount, interest));
+                            interests.Add(amount, interest);
                         }
 
                         Console.WriteLine("Please enter credit comission");
@@ -68,10 +69,11 @@ namespace Banks
                         Console.WriteLine("Please enter credit limit");
                         limit = Convert.ToInt32(Console.ReadLine());
                         Console.WriteLine("Creating bank .....");
-                        service.CreateBank(name, debitInterest, interests, comission, limit).PrintInfo();
+                        Console.WriteLine(service.CreateBank(name, debitInterest, interests, comission, limit).ToString());
                         break;
 
                     case "2":
+                        if (service.Banks == null) Console.WriteLine("There are no available banks :(");
                         Console.WriteLine("Please enter name:");
                         name = Console.ReadLine();
                         Console.WriteLine("Please enter surname");
@@ -102,16 +104,17 @@ namespace Banks
                         {
                             if (bank == b.Name)
                             {
-                                client = new ClientBuilder().SetName(name).SetSurname(surname).SetAdress(adress)
-                                    .SetPassportId(passport).GetInfo();
+                                client = new ClientBuilder().SetName(name).SetSurname(surname).SetAddress(adress)
+                                    .SetPassportId(passport).Build();
                                 service.AddClientToBank(client, b.Id);
                             }
                         }
 
-                        client.PrintInfo();
+                        Console.WriteLine(client.ToString());
                         break;
 
                     case "3":
+                        if (service.Banks == null) Console.WriteLine("There are no available banks and clients :(");
                         Console.WriteLine("Please enter account type: ");
                         Console.WriteLine("Debit, Deposit, Credit");
                         account = Console.ReadLine();
@@ -134,10 +137,11 @@ namespace Banks
                         var bank2 = service.Banks.FirstOrDefault(b => b.Name == bank);
                         var acc = service.CreateAccount(
                             bank2?.Clients.Keys.FirstOrDefault(cl => cl.Name == name && cl.Surname == surname), bank2.Id, account, money);
-                        acc.PrintInfo();
+                        Console.WriteLine(acc.ToString());
                         break;
 
                     case "4":
+                        if (service.Banks == null) Console.WriteLine("There are no available banks and clients :(");
                         Console.WriteLine("What transaction do you want to do?");
                         Console.WriteLine("Replenish, Withdraw, Transfer");
                         var trans = Console.ReadLine();
@@ -214,7 +218,7 @@ namespace Banks
                     case "6":
                         Console.WriteLine("Please enter bank name");
                         bank = Console.ReadLine();
-                        service.Banks.FirstOrDefault(b => b.Name == bank).PrintInfo();
+                        Console.WriteLine(service.Banks.FirstOrDefault(b => b.Name == bank).ToString());
                         break;
 
                     case "7":
@@ -231,7 +235,7 @@ namespace Banks
 
                         bank1 = service.Banks.FirstOrDefault(b => b.Name == bank);
                         client1 = bank1.Clients.Keys.FirstOrDefault(cl => cl.Name == name && cl.Surname == surname);
-                        bank1.Accounts.FirstOrDefault(acc => acc.Owner == client1 && acc.AccountType == account).PrintInfo();
+                        Console.WriteLine(bank1.Accounts.FirstOrDefault(acc => acc.Owner == client1 && acc.AccountType == account).ToString());
                         break;
 
                     case "8":
