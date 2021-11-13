@@ -98,13 +98,13 @@ namespace Banks
                         Console.WriteLine("Please enter bank name");
                         bank = Console.ReadLine();
                         Console.WriteLine("Creating new client....");
-                        var client = new Client();
+                        var client = new Client(name, surname);
 
                         foreach (var b in service.Banks)
                         {
                             if (bank == b.Name)
                             {
-                                client = new ClientBuilder().SetName(name).SetSurname(surname).SetAddress(adress)
+                                client = new ClientBuilder().SetNameAndSurname(name, surname).SetAddress(adress)
                                     .SetPassportId(passport).Build();
                                 service.AddClientToBank(client, b.Id);
                             }

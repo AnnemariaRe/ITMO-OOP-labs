@@ -8,8 +8,10 @@ namespace Banks.Clients
 {
     public class Client
     {
-        public Client()
+        public Client(string name, string surname)
         {
+            Name = name;
+            Surname = surname;
         }
 
         public string Name { get; protected internal set; }

@@ -2,11 +2,9 @@ namespace Banks.Clients
 {
     public interface IClientBuilder
     {
-        IClientBuilder SetName(string name);
-        IClientBuilder SetSurname(string surname);
-        IClientBuilder SetAddress(string adress);
+        IClientBuilder SetNameAndSurname(string name, string surname);
+        IClientBuilder SetAddress(string address);
         IClientBuilder SetPassportId(int passportId);
-        void Reset();
         Client Build();
     }
 }

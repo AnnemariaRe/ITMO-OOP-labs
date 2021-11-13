@@ -28,7 +28,7 @@ namespace Banks.Tests
         public void AddClientWithDebitAccountTest()
         {
             // Act
-            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").Build(), _bank.Id);
+            var client = _service.AddClientToBank(new ClientBuilder().SetNameAndSurname("Annemarija", "Repenko").Build(), _bank.Id);
             var account = _service.CreateAccount(client, _bank.Id, "Debit", 12937);
 
             // Assert
@@ -41,7 +41,7 @@ namespace Banks.Tests
         public void AddClientWithDepositAccountTest()
         {
             // Act
-            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").Build(), _bank.Id);
+            var client = _service.AddClientToBank(new ClientBuilder().SetNameAndSurname("Annemarija", "Repenko").Build(), _bank.Id);
             var account = _service.CreateAccount(client, _bank.Id, "Deposit", 7345);
 
             // Assert
@@ -53,7 +53,7 @@ namespace Banks.Tests
         public void AddClientWithCreditAccountTest()
         {
             // Act
-            var client = _service.AddClientToBank(new ClientBuilder().SetName("Annemarija").SetSurname("Repenko").Build(), _bank.Id);
+            var client = _service.AddClientToBank(new ClientBuilder().SetNameAndSurname("Annemarija", "Repenko").Build(), _bank.Id);
             var account = _service.CreateAccount(client, _bank.Id, "Credit", 1);
 
             // Assert

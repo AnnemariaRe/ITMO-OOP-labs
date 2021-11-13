@@ -7,15 +7,9 @@ namespace Banks.Clients
     {
         private Client _client;
 
-        public IClientBuilder SetName(string name)
+        public IClientBuilder SetNameAndSurname(string name, string surname)
         {
-            _client.Name = name;
-            return this;
-        }
-
-        public IClientBuilder SetSurname(string surname)
-        {
-            _client.Surname = surname;
+            _client = new Client(name, surname);
             return this;
         }
 
@@ -31,17 +25,13 @@ namespace Banks.Clients
             return this;
         }
 
-        public void Reset()
-        {
-            _client = new Client();
-        }
-
         public Client Build()
         {
             if (_client.Name == null || _client.Surname == null)
                 throw new NullOrEmptyBanksException("Cannot create client without name or surname");
             var currentClient = _client;
-            Reset();
+            _client.Address = null;
+            _client.PassportId = 0;
             return currentClient;
         }
     }
