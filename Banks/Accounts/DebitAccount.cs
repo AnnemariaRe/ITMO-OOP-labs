@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Banks.Clients;
 using Banks.Tools;
 
@@ -16,11 +17,13 @@ namespace Banks.Accounts
 
         public override bool IsWithdrawAvaliable(decimal value) => Balance >= value;
 
-        public new void PrintInfo()
+        public override string ToString()
         {
-            Console.WriteLine("Account type: Debit account");
-            Console.WriteLine($"Balance: {Balance}");
-            Console.WriteLine($"Interest on Balance: {InterestOnBalance}");
+            var sb = new StringBuilder();
+            sb.AppendLine("Account type: Debit account");
+            sb.AppendLine($"Balance: {Balance}");
+            sb.AppendLine($"Interest on Balance: {InterestOnBalance}");
+            return sb.ToString();
         }
     }
 }

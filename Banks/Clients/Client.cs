@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Banks.Accounts;
 using Banks.Tools;
 
@@ -15,22 +16,16 @@ namespace Banks.Clients
         public string Surname { get; protected internal set; }
         public string Address { get; protected internal set; }
         public int PassportId { get; protected internal set; }
-        public bool IsVerified { get; private set; }
+        public bool IsVerified => PassportId > 0 && !string.IsNullOrWhiteSpace(Address);
 
-        public bool SetVerification()
+        public override string ToString()
         {
-            if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Surname))
-                throw new NullOrEmptyBanksException("Client name cannot be null");
-            if (string.IsNullOrEmpty(Address) || PassportId == 0) return IsVerified = false;
-            return IsVerified = true;
-        }
-
-        public void PrintInfo()
-        {
-            Console.WriteLine($"Name: {Name}");
-            Console.WriteLine($"Surname: {Surname}");
-            Console.WriteLine($"Adress: {Address}");
-            Console.WriteLine($"Passport id: {PassportId}");
+            var sb = new StringBuilder();
+            sb.AppendLine($"Name: {Name}");
+            sb.AppendLine($"Surname: {Surname}");
+            sb.AppendLine($"Adress: {Address}");
+            sb.AppendLine($"Passport id: {PassportId}");
+            return sb.ToString();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Banks.Clients;
 using Banks.Tools;
 
@@ -18,12 +19,14 @@ namespace Banks.Accounts
 
         public override bool IsWithdrawAvaliable(decimal value) => Math.Abs(Balance - value) < Limit;
 
-        public new void PrintInfo()
+        public override string ToString()
         {
-            Console.WriteLine("Account type: Credit account");
-            Console.WriteLine($"Balance: {Balance}");
-            Console.WriteLine($"Credit limit: {Limit}");
-            Console.WriteLine($"Comission: {Comission}");
+            var sb = new StringBuilder();
+            sb.AppendLine("Account type: Credit account");
+            sb.AppendLine($"Balance: {Balance}");
+            sb.AppendLine($"Credit limit: {Limit}");
+            sb.AppendLine($"Comission: {Comission}");
+            return sb.ToString();
         }
 
         private decimal CalculateComission(decimal value) => value * Comission / 100;

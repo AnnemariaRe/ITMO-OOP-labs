@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Banks.Clients;
 using Banks.Tools;
 
@@ -18,12 +19,14 @@ namespace Banks.Accounts
 
         public override bool IsWithdrawAvaliable(decimal value) => Balance >= value && ExpirationDate < DateTime.Now;
 
-        public new void PrintInfo()
+        public override string ToString()
         {
-            Console.WriteLine("Account type: Credit account");
-            Console.WriteLine($"Balance: {Balance}");
-            Console.WriteLine($"Expiration date: {ExpirationDate}");
-            Console.WriteLine($"Interest on balance: {InterestOnBalance}");
+            var sb = new StringBuilder();
+            sb.AppendLine("Account type: Deposit account");
+            sb.AppendLine($"Balance: {Balance}");
+            sb.AppendLine($"Expiration date: {ExpirationDate}");
+            sb.AppendLine($"Interest on balance: {InterestOnBalance}");
+            return sb.ToString();
         }
 
         private void SetInterestOnBalance(List<(int, decimal)> interests)

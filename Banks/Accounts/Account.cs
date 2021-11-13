@@ -63,20 +63,15 @@ namespace Banks.Accounts
 
         public abstract bool IsWithdrawAvaliable(decimal value);
 
-        public void PrintInfo()
+        public override string ToString()
         {
-            switch (this)
+            return this switch
             {
-                case DebitAccount acc:
-                    acc.PrintInfo();
-                    break;
-                case DepositAccount acc:
-                    acc.PrintInfo();
-                    break;
-                case CreditAccount acc:
-                    acc.PrintInfo();
-                    break;
-            }
+                DebitAccount acc => acc.ToString(),
+                DepositAccount acc => acc.ToString(),
+                CreditAccount acc => acc.ToString(),
+                _ => null
+            };
         }
     }
 }
