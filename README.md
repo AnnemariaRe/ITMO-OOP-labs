@@ -1,15 +1,15 @@
 # ITMO-OOP-labs
 
-### Lab 1. Shops.
-------
+### Lab 1. Shops
 **Objective:** Demonstrate the ability to identify entities and design classes based on them.
 
 
 **Application area:** shop, customer, delivery, replenishment and purchase of goods. A shop has a unique identifier, name and address. Each shop has a set price for a product and a certain number of items in stock. The buyer can make a purchase. At the time of purchase - he transfers the right amount of money to the shop. Delivery of goods is a set of goods, their prices and quantities to be added to the shop.
 
-
+ 
+-------------
 ### Lab 2. Isu Extra
--------
+
 **Objective:** To learn how to identify areas of responsibility of different entities and design the relationships between them.
 
 
@@ -20,9 +20,9 @@ A OGNP course is a complementary course that students can take. The course is im
 Students can enrol in two different courses of the GCSE. A student may not enrol in a UGNP which represents the megafaculty of his/her study group. 
 
 
-
+-------------
 ### Lab 3. Backups
---------------
+
 **Objective:** To apply the principles from SOLID, GRASP in practice.
 
 **Subject area:**
@@ -47,8 +47,9 @@ The lab work assumes that backups will be created locally on the file system. Bu
 The backup job is responsible for creating new restore points (i.e. it acts as a kind of front end encapsulating the logic). When creating a backup job it should be possible to specify its name, backup job name, backup method or location and backup file algorithm. It should be possible to add or remove Job objects from Backup Job. The result of the algorithm is the creation of a new recovery point. 
 
 
+--------------------
 ### Lab 4. Banks
-----------
+
 **Objective:** To apply the SOLID, GRASP, pattern principles in practice.
 
 
@@ -84,8 +85,9 @@ Another mandatory mechanism that banks must have is the cancellation of transact
 To interact with the bank, we need to implement a console interface which will interact with the application logic, send and receive data, display the required information and provide an interface for user input.
 
 
+----------------------
 ### Lab 5. BackupsExtra
----------------
+
 #### Saving and loading data
 The system must be able to load its state after a restart. Once loaded, the application is expected to load information about existing jobs, objects added to them, and information about created restore points.
    
